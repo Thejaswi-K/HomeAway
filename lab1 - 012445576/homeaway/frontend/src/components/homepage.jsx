@@ -81,7 +81,7 @@ class Homepage extends Component {
                                 <input
                                 type="text"
                                 class="form-control"
-                                placeholder="Where do you want to go?"
+                                placeholder="Where do you want to go??"
                                 />
                             </div>
                             <div className="col-md-2">
