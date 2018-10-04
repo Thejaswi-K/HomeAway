@@ -1,0 +1,41 @@
+.HomePageTop {
+  background-image: url("./resources/large.jpg");
+  background-size: cover;
+  background-position: 50%;
+}
+
+.HomePageJumb {
+  font-size: 40px;
+  font-weight: 400;
+  letter-Spacing: .1px;
+  text-align: left;
+  line-height: normal;
+  font-family: "Lato", "Arial", "Helvetica";
+  color: "white";
+}
+
+.ListYourProp{
+  border-radius: 30px;
+  font-size: 14px;
+  margin: 15px 15px;
+  padding: 12px 40px;
+  min-height: 48px;
+  background-Color: #fff;
+  color: #0067db;
+  border-color: #fff;
+}
+
+.nav-link-item{
+  margin: 15px 15px;
+  background: transparent;
+}
+
+/*.HomePageTopInput{
+  position: relative;
+  border-radius: 4px;
+  margin:  0 auto;
+  padding: 10px 10px 0px;
+  background: rgba(0,0,0,.2);
+  line-height: 1.5rem;
+  color: #5e6d77;
+}*/
