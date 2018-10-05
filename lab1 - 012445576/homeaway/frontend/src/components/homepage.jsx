@@ -6,11 +6,11 @@ class Homepage extends Component {
         return ( 
             <div className="HomePageTop">
                 <div>
-                <nav className="navbar navbar-static-top " style={{background: "transparent"}}>
+                <nav className="navbar navbar-static-top ">
                     <div className="container-fluid">
                         <div className="navbar-header">
                             <a className="navbar-brand" href="#">
-                                <img alt="HomeAway logo" className="site-header-logo__img img-responsive" role="presentation" src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.11.0/bce/moniker/homeaway_us/logo-bceheader-white.svg" />
+                                <img alt="HomeAway logo" className="site-header-logo__img img-responsive" role="presentation" src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/logo-bceheader.svg" />
                             </a>
                         </div>
                         <div className="nav navbar-nav navbar-right">
@@ -111,7 +111,7 @@ class Homepage extends Component {
                                     class="btn btn-lg btn-primary"
                                     style={{ borderRadius: "30px", width: "200px" }}
                                 >
-                                Sign in
+                                Search
                                 </button>
                             </div>
                         </div>

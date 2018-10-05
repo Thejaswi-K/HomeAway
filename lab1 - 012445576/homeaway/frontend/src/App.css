@@ -39,3 +39,28 @@
   line-height: 1.5rem;
   color: #5e6d77;
 }*/
+
+.header-bce{
+  background: #fff;
+  border-bottom: "1px solid #dbdbdb";
+  border-top: 0;
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.header-bce-birdhouse-container{
+  position: "absolute";
+  top: 0;
+  right: 0;
+  height: "80px";
+  width: "80px";
+  text-align: "center";
+}
+.card{
+  width: 27rem;
+  padding: 35px;
+  background-color: #fff;
+  border: 2px solid #e5e5e5;
+  margin: 10px;
+}
