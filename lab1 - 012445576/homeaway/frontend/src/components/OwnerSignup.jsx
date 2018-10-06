@@ -1,7 +1,76 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+import {Redirect} from 'react-router';
+import cookie from 'react-cookies';
 class OwnerSignup extends Component {
-    state = {  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            firstName: "",
+            lastName: "",
+            email: "",
+            username:"",
+            password: "",
+            ValidationMessage: ""     
+        };
+    
+        this.firstNameChangehandler = this.firstNameChangehandler.bind(this);
+        this.lastNameChangeHandler = this.lastNameChangeHandler.bind(this);
+        this.emailChangeHandler = this.emailChangeHandler.bind(this);  
+        this.usernameChangeHandler = this.usernameChangeHandler.bind(this);
+        this.passwordChangeHandler = this.passwordChangeHandler.bind(this);
+        this.submitSignUp = this.submitSignUp.bind(this);  
+    }
+    firstNameChangehandler = e =>{
+        this.setState({
+            firstName: e.target.value
+        });
+    };
+    lastNameChangeHandler = e =>{
+        this.setState({
+            lastName:e.target.value
+        })
+    };
+    emailChangeHandler = e =>{
+        this.setState({
+            email:e.target.value
+        });
+    };
+    usernameChangeHandler = e =>{
+        this.setState({
+            username :e.target.value
+        });
+    };
+    passwordChangeHandler=e=>{
+        this.setState({
+            password:e.target.value
+        });
+    };
+    submitSignUp = e => {
+        e.preventDefault();
+        const data = {
+            firstname: this.state.firstName,
+            lastname: this.state.lastName,
+            email:this.state.email,
+            username: this.state.username,
+            password: this.state.password
+        };
+          
+        axios.defaults.withCredentials = true;
+        axios.post("http://localhost:3001/createowner", data).then(response => {
+            this.setState({
+                ValidationMessage:"Owner Account Created, Please Sign in to continue"
+            })
+        })
+        .catch(function(error) {
+            console.log(error);
+            this.setState({   
+                ValidationMessage:"Owner Creation failed, try again"
+            })
+        });
+    }
     render() { 
+        
         return ( 
             <div
                 style={{
@@ -11,10 +80,9 @@ class OwnerSignup extends Component {
                 boxSizing : "border-box"  
                 }}
             >
-            
                 <div className="header-bce">
                     <div className="container">
-                        <div className="navbar header navbar-bce">
+                        <div className="navbar navbar-left header navbar-bce">
                             <div className="navbar-inner">
                                 <div className="pull-left">
                                 <a href="./Home/home.jsx" title="HomeAway" className="logo">
@@ -99,9 +167,9 @@ class OwnerSignup extends Component {
                                         onChange={this.passwordChangeHandler}
                                         />
                                     </div>
-                                    <button type="button" class="btn btn-warning btn-lg btn-block" onClick={this.submitForm}>Sign up as owner</button>
+                                    <button type="button" class="btn btn-primary" onClick={this.submitSignUp}>Sign up as owner</button>
                                     <label for="credentialsValid" style={{color:"red"}}>
-                                    {this.state.status}
+                                    {this.state.ValidationMessage}
                                     </label>
                                 </form>
                             </div>
