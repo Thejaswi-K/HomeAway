@@ -14,6 +14,8 @@ import LocationPostingAvailability from './PropertyPosting/LocationPostingAvaila
 import LocationPostingPhotos from './PropertyPosting/LocationPostingPhotos';
 import OwnerDashboard from './Dashboard/OwnerDashboard';
 import TravellerDashboard from './Dashboard/TravellerDashboard';
+import TravellerProfile from './Profile/TravellerProfile';
+import TravellerProfileEdit from './Profile/TravellerProfileEdit';
 
 //Create a Main Component
 class Main extends Component {
@@ -36,6 +38,8 @@ class Main extends Component {
                 <Route path="/locationpostphotos" component={LocationPostingPhotos}/>
                 <Route path="/ownerdashboard" component={OwnerDashboard}/>
                 <Route path="/travellerdashboard" component={TravellerDashboard}/>
+                <Route path="/travellerprofile" component={TravellerProfile}/>
+                <Route path="/travellerprofileedit" component={TravellerProfileEdit}/>
             </div>
         )
     }

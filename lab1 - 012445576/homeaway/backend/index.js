@@ -237,7 +237,7 @@ app.get("/getownerproperties/:username", function(req, res) {
       }
     });
   });
-  app.get("/getOwnerdetails/:username", function(req, res) {
+  app.get("/getownerdetails/:username", function(req, res) {
     var sql =
       "SELECT * FROM ownertable where username =" +
       mysql.escape(req.params.username);
@@ -263,6 +263,76 @@ app.get("/getownerproperties/:username", function(req, res) {
                 "Content-Type": "application/json"
               });
               res.end(JSON.stringify(result));
+            }
+          }
+        });
+      }
+    });
+  });
+  app.get("/gettravellerdetails/:username", function(req, res) {
+    var sql =
+      "SELECT * FROM travellertable where username =" +
+      mysql.escape(req.params.username);
+    console.log("sql query is ", sql);
+    pool.getConnection(function(err, con) {
+      if (err) {
+        res.writeHead(400, {
+          "Content-Type": "text/plain"
+        });
+        res.end("Could Not Get Connection Object");
+      } else {
+        con.query(sql, function(err, result) {
+          if (err) {
+            res.writeHead(400, {
+              "Content-Type": "text/plain"
+            });
+            res.end("Could Not Get Connection Object");
+          } else {
+            if (result < 1) {
+              res.end("result is empty");
+            } else {
+              res.writeHead(200, {
+                "Content-Type": "application/json"
+              });
+              res.end(JSON.stringify(result));
+            }
+          }
+        });
+      }
+    });
+  });
+app.post("/travellerprofileedit", function(req, res) {
+    var data = req.body;
+    console.log("username is ", data.username);
+    var sql = "UPDATE `travellertable` SET  `firstname` = " + mysql.escape(req.body.firstname) + ", `lastname` = " + mysql.escape(req.body.lastname) + ", `email` = " + mysql.escape(req.body.email) + ", `gender` =" + mysql.escape(req.body.gender) + ", `phonenumber` =" + mysql.escape(req.body.phonenumber) + ", `aboutme` =" + mysql.escape(req.body.aboutme) + ", `country` =" + mysql.escape(req.body.country) + ", `company` =" + mysql.escape(req.body.company) + ", `school` =" + mysql.escape(req.body.school) + ", `hometown` =" + mysql.escape(req.body.hometown) + ", `languages` =" + mysql.escape(req.body.languages) + ", `profileimage` =" + mysql.escape(req.body.profileimage) + ", `city` =" + mysql.escape(req.body.city) + "WHERE `travellertable`.`username` = " + mysql.escape(req.body.username);
+    console.log("sql query is ", sql);
+    pool.getConnection(function(err, con) {
+      if (err) {
+          console.log("inside connection if")
+        res.writeHead(400, {
+          "Content-Type": "text/plain"
+        });
+        res.end("Could Not Get Connection Object");
+      } else {
+          console.log("inside connection else")
+        con.query(sql, function(err, result) {
+          if (err) {
+              console.log("inside query if")
+            res.writeHead(400, {
+              "Content-Type": "text/plain"
+            });
+            res.end("Could Not Get Connection Object");
+          } else {
+            console.log(result);
+            if (result.length < 1) {
+              console.log("result empty");
+              res.end("result is empty");
+            } else {
+              res.writeHead(200, {
+                "Content-Type": "application/json"
+              });
+              console.log(result);
+              res.end("success");
             }
           }
         });

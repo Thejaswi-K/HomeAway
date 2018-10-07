@@ -4,7 +4,25 @@ import {Redirect} from 'react-router';
 import cookie from 'react-cookies';
 import "../../App.css";
 class Homepage extends Component {
-    state = {  }
+    constructor(props){
+        super(props);
+        this.state = {
+            
+        }
+        //Bind the handlers to this class
+        this.logout = this.logout.bind(this);
+        this.profileHandler=this.profileHandler.bind(this);
+    }
+    logout = (e) => {
+        cookie.remove("traveller",{path : '/'})
+        this.forceUpdate();
+    }
+    profileHandler = (e) => {
+        e.preventDefault();
+        this.props.history.push({
+        pathname: "/travellerprofile"
+        });
+    }
     render() { 
         let redirectVar = null;
         if(!cookie.load('traveller')){
@@ -12,6 +30,7 @@ class Homepage extends Component {
         }
         return ( 
             <div className="HomePageTop">
+                {redirectVar}
                 <div>
                 <nav className="navbar navbar-static-top ">
                     <div className="container-fluid">
@@ -21,16 +40,9 @@ class Homepage extends Component {
                             </a>
                         </div>
                         <div className="nav navbar-nav navbar-right">
-                            <li className="nav-link nav-link-item"><a href="#">Trip Boards</a></li>
-                            <li className="dropdown show nav-link-item">
-                                <a className="nav-link btn btn-secondary dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Login <span aria-hidden="true" className="caret"></span>
-                                </a>
-                                <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a className="dropdown-item" href="#">Traveller Login</a></li>
-                                    <li><a className="dropdown-item" href="#">Owner Login</a></li>
-                                </ul>
-                            </li>
+                            <li><button className="btn btn-default btn-inverse ListYourProp" onClick={this.profileHandler}>Profile</button></li>
+                            <li className="nav-link nav-link-item"><a href="/travellerdashboard">Trip Boards</a></li>
+                            <li><button className="btn btn-default btn-inverse ListYourProp" href="#">List your property</button></li>
                             <li className="dropdown show nav-link-item">
                                 <a className="nav-link btn btn-secondary dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Help <span aria-hidden="true" className="caret"></span>
@@ -46,7 +58,7 @@ class Homepage extends Component {
                                     <li><a className="dropdown-item" href="#">Community</a></li>
                                 </ul>
                             </li>
-                            <li><a className="btn btn-default btn-inverse ListYourProp" href="#">List your property</a></li>
+                            <li><button className="btn btn-default btn-inverse ListYourProp" onClick={this.logout}>Logout</button></li>
                             <li className="dropdown show nav-link-item">
                                 <a className="nav-link btn btn-secondary dropdown-toggle" href="#" id ="navbarDropdown">
                                     <img src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.11.0/bce/moniker/homeaway_us/birdhouse-bceheader-white.svg"/>
