@@ -64,7 +64,7 @@ class TravellerLogin extends Component {
        }
     render() { 
         let redirectVar = null;
-        if(cookie.load('cookie')){
+        if(cookie.load('traveller')){
             redirectVar = <Redirect to= "/home"/>
         }
         return ( 

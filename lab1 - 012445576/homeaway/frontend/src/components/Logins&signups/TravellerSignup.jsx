@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import {Redirect} from 'react-router';
 import cookie from 'react-cookies';
-class OwnerSignup extends Component {
+class TravellerSignup extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -57,27 +57,27 @@ class OwnerSignup extends Component {
         };
           
         axios.defaults.withCredentials = true;
-        axios.post("http://localhost:3001/createowner", data).then(response => {
+        axios.post("http://localhost:3001/createtraveller", data).then(response => {
+            console.log("inside submit resp");
             this.setState({
-                ValidationMessage:"Owner Account Created, Please Sign in to continue"
+                ValidationMessage:"Traveller Account Created, Please Sign in to continue"
             })
         })
         .catch(function(error) {
             console.log(error);
             this.setState({   
-                ValidationMessage:"Owner Creation failed, try again"
+                ValidationMessage:"Traveller Creation failed, try again"
             })
         });
     }
     render() { 
-        
         return ( 
             <div
                 style={{
                 backgroundColor: "#f4f4f4",
                 minHeight: "100vh",
                 minWidth: "100%",
-                boxSizing : "border-box"  
+                boxSizing : "border-box"   
                 }}
             >
                 <div className="header-bce">
@@ -105,72 +105,34 @@ class OwnerSignup extends Component {
                 <div className="container-fluid" style={{ marginTop: "60px" }}>
                     <div className="row justify-content-center" style={{ marginLeft: "-15px", marginRight: "-15px" }}>
                         <div className="col-3">
-                            <h1 style={{fontSize: "40px", fontWeight: "300", fontFamily: "Arial", color: "#353e44",textAlign: "center"}}>Sign up for Homeaway Owner</h1>
+                            <h1 style={{fontSize: "40px", fontWeight: "300", fontFamily: "Arial", color: "#353e44",textAlign: "center"}}>Sign up for Homeaway</h1>
                             <div className="footer" style={{ textAlign: "center" }}>
                                 Already have an account?
-                                <a href="/ownerLogin">Sign in</a>
+                                <a href="/travellerLogin">Sign in</a>
                             </div>
                             <div className="card">
                                 <form>
                                     <div className="form-group">
                                         <div className="row">
-                                            <div className="col">
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                id="inputFirstName"
-                                                aria-describedby="firstnameHelp"
-                                                placeholder="First Name"
-                                                onChange={this.firstNameChangehandler}
-                                            />
+                                            <div>
+                                                <input type="text" class="form-control" id="inputFirstName" aria-describedby="firstnameHelp" placeholder="First Name" onChange={this.firstNameChangehandler}/>
                                             </div>
-                                            <div className="col">
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                id="inputLastName"
-                                                aria-describedby="lastnameHelp"
-                                                placeholder="Last Name"
-                                                onChange={this.lastNameChangeHandler}
-                                            />
+                                            <div>
+                                                <input type="text" class="form-control" id="inputLastName" aria-describedby="lastnameHelp" placeholder="Last Name" onChange={this.lastNameChangeHandler}/>
                                             </div>
                                         </div>
                                     </div>
-
                                     <div className="form-group">
-                                        <input
-                                        type="email"
-                                        class="form-control"
-                                        id="inputEmail1"
-                                        aria-describedby="emailHelp"
-                                        placeholder="Email address"
-                                        onChange={this.emailChangeHandler}
-                                        />
+                                        <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address" onChange={this.emailChangeHandler}/>
                                     </div>
                                     <div className="form-group">
-                                        <input
-                                        type="username"
-                                        class="form-control"
-                                        id="inputUsername"
-                                        aria-describedby="usernameHelp"
-                                        placeholder="Username"
-                                        onChange={this.usernameChangeHandler}
-                                        />
+                                        <input type="username" class="form-control" id="inputUsername" aria-describedby="usernameHelp" placeholder="Username" onChange={this.usernameChangeHandler}/>
                                     </div>
                                     <div className="form-group">
-                                        <input
-                                        type="password"
-                                        class="form-control"
-                                        id="inputPassword"
-                                        aria-describedby="passwordHelp"
-                                        placeholder="Password"
-                                        onChange={this.passwordChangeHandler}
-                                        />
+                                            <input type="password" class="form-control" id="inputPassword" aria-describedby="passwordHelp" placeholder="Password" onChange={this.passwordChangeHandler}/>
                                     </div>
-                                    <button type="button" class="btn btn-primary" onClick={this.submitSignUp}>Sign up as owner</button>
-                                    <label for="credentialsValid" style={{color:"red"}}>
-                                    {this.state.ValidationMessage}
-                                    </label>
+                                    <button type="button" class="btn btn-primary" onClick={this.submitSignUp}>Sign up as Traveller</button>
+                                    <label for="credentialsValid" style={{color:"red"}}>{this.state.ValidationMessage}</label>
                                 </form>
                             </div>
                         </div>
@@ -181,4 +143,4 @@ class OwnerSignup extends Component {
     }
 }
  
-export default OwnerSignup;
+export default TravellerSignup;

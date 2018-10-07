@@ -57,7 +57,7 @@ app.post('/logintraveller',function(req,res){
                     res.end("Invalid Credentials");
                 }else{
                     if (result.length != 0) {
-                        res.cookie('cookie',"admin",{maxAge: 900000, httpOnly: false, path : '/'});
+                        res.cookie('traveller',username,{maxAge: 900000, httpOnly: false, path : '/'});
                     }
                     req.session.user = result;
                     res.writeHead(200,{
@@ -128,7 +128,7 @@ app.post('/loginowner',function(req,res){
                     console.log(result);
                     console.log("inside else inside else")
                     if (result.length != 0) {
-                        res.cookie('cookie',"admin",{maxAge: 900000, httpOnly: false, path : '/'});
+                        res.cookie('owner',username,{maxAge: 900000, httpOnly: false, path : '/'});
                     }
                     req.session.user = result;
                     res.writeHead(200,{
@@ -168,6 +168,38 @@ app.post('/createowner',function(req,res){
                         'Content-Type' : 'text/plain'
                     })
                     res.end('traveller Created Successfully');
+                }
+            });
+        }
+    });
+});
+app.post('/createproperty',function(req,res){
+    pool.getConnection(function(err,con){
+        if(err){
+            console.log("inside login if")
+            res.writeHead(400,{
+                'Content-Type' : 'text/plain'
+            })
+            res.end("Could Not Get Connection Object");
+        }else{
+            console.log("Inside Create Request Handler");
+            var sql = "INSERT INTO propertytable VALUES ( " + 
+            mysql.escape(req.body.username) + " , " + mysql.escape(req.body.location) + " , "+
+            mysql.escape(req.body.headlines) + "," + mysql.escape(req.body.description) + "," + mysql.escape(req.body.accomodation) + "," + mysql.escape(req.body.bathrooms) + "," + mysql.escape(req.body.bookingOption) + "," + mysql.escape(req.body.availabilityFrom) + "," + mysql.escape(req.body.availabilityTo) + "," + mysql.escape(req.body.price) + "," + mysql.escape(req.body.photo1) + "," + mysql.escape(req.body.photo2) + "," + mysql.escape(req.body.photo3) + "," + mysql.escape(req.body.photo4) + "," + mysql.escape(req.body.photo5) + " ) ";
+            console.log("inside create: ",sql);
+            con.query(sql,function(err,result){
+                if(err){
+                    console.log("inside create, if");
+                    res.writeHead(400,{
+                        'Content-Type' : 'text/plain'
+                    })
+                    res.end("Error While Creating property");
+                }else{
+                    console.log("inside create, else");
+                    res.writeHead(200,{
+                        'Content-Type' : 'text/plain'
+                    })
+                    res.end('property Created Successfully');
                 }
             });
         }

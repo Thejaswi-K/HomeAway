@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
-import "../App.css";
+import axios from 'axios';
+import {Redirect} from 'react-router';
+import cookie from 'react-cookies';
+import "../../App.css";
 class Homepage extends Component {
     state = {  }
     render() { 
+        let redirectVar = null;
+        if(!cookie.load('traveller')){
+            redirectVar = <Redirect to= "/travellerlogin"/>
+        }
         return ( 
             <div className="HomePageTop">
                 <div>

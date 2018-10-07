@@ -64,8 +64,8 @@ class OwnerLogin extends Component {
        }
     render() { 
         let redirectVar = null;
-        if(cookie.load('cookie')){
-            redirectVar = <Redirect to= "/locationPost"/>
+        if(cookie.load('owner')){
+            redirectVar = <Redirect to= "/locationpostwel"/>
         }   
         return ( 
             
