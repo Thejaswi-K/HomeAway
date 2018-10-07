@@ -25,6 +25,18 @@ class LocationPostingWel extends Component {
             photo5:""
         }
         this.continueButton=this.continueButton.bind(this);
+        this.dashboardHandler=this.dashboardHandler.bind(this);
+        this.logout=this.logout.bind(this);
+    }
+    dashboardHandler = (e) =>{
+        e.preventDefault();
+        this.props.history.push({
+            pathname:"/ownerdashboard"
+        })
+    }
+    logout = (e) => {
+        cookie.remove("owner",{path : '/'})
+        this.forceUpdate();
     }
     continueButton = (e) =>{
         e.preventDefault();
@@ -42,30 +54,25 @@ class LocationPostingWel extends Component {
         return ( 
             <div>
                 {redirectVar}
-                <nav className="nav" style={{boxSizing : "border-box", backgroundColor: "#f4f4f4"}}>
-                    <li className="navbar navbar-left header navbar-bce">
-                        <div className="navbar-inner">
-                            <div className="pull-left">
-                                <a href="./Home/home.jsx" title="HomeAway" className="logo">
-                                    <img style={{filter: "brightness(0)"}} src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/logo-bceheader.svg" />
-                                </a>
-                            </div>
+                <nav class="navbar" style={{boxSizing : "border-box", backgroundColor: "#f4f4f4"}}>
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <a class="navbar-brand" href="#">
+                                <img href="/locationpostwel" style={{filter: "brightness(0)"}}src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/logo-bceheader.svg" />
+                            </a>
                         </div>
-                    </li>
-                    <li>
-                        <div className="navbar navbar-left" style={{margin:"10px"}}> 
-                            <button className="btn btn-primary">My Account</button>     
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><button className="btn btn-primary" onClick={this.dashboardHandler} style={{margin:"10px"}}>My Dashboard</button></li>
+                                <li><button className="btn btn-secondary" onClick={this.logout} style={{margin:"10px"}}>Signout</button></li>
+                                <li>
+                                    <a href="#">
+                                        <img src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/birdhouse-bceheader.svg" />
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
-                    </li>
-                    <li className="navbar navbar-right header header-bce-birdhouse-container">
-                        <div className="flip-container">
-                            <div className="flipper">
-                                <div className="front btn-bce">
-                                    <img src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/birdhouse-bceheader.svg" />
-                                </div>
-                            </div>
-                        </div>
-                    </li>      
+                    </div>
                 </nav>
                 <div className="container row" >
                     <div className="container col-md-2">
@@ -89,7 +96,7 @@ class LocationPostingWel extends Component {
                                 <Link to={{pathname:"/locationpostpricing", state : this.state }}> Pricing </Link>
                             </li>
                             <li class="nav-item">
-                                <Link to={{pathname:"/locationpostloc", state : this.state }}> Photos </Link>
+                                <Link to={{pathname:"/locationpostphotos", state : this.state }}> Photos </Link>
                             </li>
                         </ul>
                     </div>

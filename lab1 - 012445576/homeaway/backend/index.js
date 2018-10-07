@@ -183,9 +183,9 @@ app.post('/createproperty',function(req,res){
             res.end("Could Not Get Connection Object");
         }else{
             console.log("Inside Create Request Handler");
-            var sql = "INSERT INTO propertytable VALUES ( " + 
+            var sql = "INSERT INTO propertytable VALUES ( " + "NULL," + 
             mysql.escape(req.body.username) + " , " + mysql.escape(req.body.location) + " , "+
-            mysql.escape(req.body.headlines) + "," + mysql.escape(req.body.description) + "," + mysql.escape(req.body.accomodation) + "," + mysql.escape(req.body.bathrooms) + "," + mysql.escape(req.body.bookingOption) + "," + mysql.escape(req.body.availabilityFrom) + "," + mysql.escape(req.body.availabilityTo) + "," + mysql.escape(req.body.price) + "," + mysql.escape(req.body.photo1) + "," + mysql.escape(req.body.photo2) + "," + mysql.escape(req.body.photo3) + "," + mysql.escape(req.body.photo4) + "," + mysql.escape(req.body.photo5) + " ) ";
+            mysql.escape(req.body.headlines) + "," + mysql.escape(req.body.description) + "," + mysql.escape(req.body.accomodation) + "," + mysql.escape(req.body.bathrooms) + "," + mysql.escape(req.body.bedrooms) + "," + mysql.escape(req.body.propertyType) + "," + mysql.escape(req.body.bookingOption) + "," + mysql.escape(req.body.availabilityFrom) + "," + mysql.escape(req.body.availabilityTo) + "," + mysql.escape(req.body.price) + "," + mysql.escape(req.body.photo1) + "," + mysql.escape(req.body.photo2) + "," + mysql.escape(req.body.photo3) + "," + mysql.escape(req.body.photo4) + "," + mysql.escape(req.body.photo5) + " ) ";
             console.log("inside create: ",sql);
             con.query(sql,function(err,result){
                 if(err){
@@ -205,6 +205,70 @@ app.post('/createproperty',function(req,res){
         }
     });
 });
+app.get("/getownerproperties/:username", function(req, res) {
+    var sql =
+      "SELECT * FROM propertytable where username =" +
+      mysql.escape(req.params.username);
+    console.log("sql query is ", sql);
+    pool.getConnection(function(err, con) {
+      if (err) {
+        res.writeHead(400, {
+          "Content-Type": "text/plain"
+        });
+        res.end("Could Not Get Connection Object");
+      } else {
+        con.query(sql, function(err, result) {
+          if (err) {
+            res.writeHead(400, {
+              "Content-Type": "text/plain"
+            });
+            res.end("Could Not Get Connection Object");
+          } else {
+            if (result < 1) {
+              res.end("result is empty");
+            } else {
+              res.writeHead(200, {
+                "Content-Type": "application/json"
+              });
+              res.end(JSON.stringify(result));
+            }
+          }
+        });
+      }
+    });
+  });
+  app.get("/getOwnerdetails/:username", function(req, res) {
+    var sql =
+      "SELECT * FROM ownertable where username =" +
+      mysql.escape(req.params.username);
+    console.log("sql query is ", sql);
+    pool.getConnection(function(err, con) {
+      if (err) {
+        res.writeHead(400, {
+          "Content-Type": "text/plain"
+        });
+        res.end("Could Not Get Connection Object");
+      } else {
+        con.query(sql, function(err, result) {
+          if (err) {
+            res.writeHead(400, {
+              "Content-Type": "text/plain"
+            });
+            res.end("Could Not Get Connection Object");
+          } else {
+            if (result < 1) {
+              res.end("result is empty");
+            } else {
+              res.writeHead(200, {
+                "Content-Type": "application/json"
+              });
+              res.end(JSON.stringify(result));
+            }
+          }
+        });
+      }
+    });
+  });
 
 app.listen(3001);
 console.log("Server Listening on port 3001");
