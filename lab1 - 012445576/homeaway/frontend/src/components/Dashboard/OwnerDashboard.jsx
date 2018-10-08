@@ -109,10 +109,8 @@ class OwnerDashboard extends Component {
                     </div>
                 </div>
                 <div className="card" style={{backgroundColor: "#f4f4f4", marginLeft:"350px", width:"80rem"}}>
-                        <h4 style={{ marginLeft: "120px", marginTop: "40px" }}>
-                        Properties listed by you
-                        </h4>
-                        {allProperties.map((property, i) => (
+                    <h4 style={{ marginLeft: "120px", marginTop: "40px" }}>Properties listed by you</h4>
+                    {allProperties.map((property, i) => (
                         <div
                         className="card"
                         style={{

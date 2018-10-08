@@ -24,7 +24,7 @@ class TravellerprofileEdit extends Component {
         this.valueChangeHandler = this.valueChangeHandler.bind(this);
         this.editHandler = this.editHandler.bind(this);
         this.logout=this.logout.bind(this);
-        this.dashboardHandler=this.dashboardHandler.bind(this);   
+        this.dashboardHandler=this.dashboardHandler.bind(this);  
     }
     logout = (e) => {
         cookie.remove("traveller",{path : '/'})
@@ -75,10 +75,6 @@ class TravellerprofileEdit extends Component {
                 console.log(error);
                 }            
             });
-        
-        this.props.history.push({
-            pathname:"/travellerprofile"
-        })
     }
     render() { 
         let redirectVar = null;
@@ -91,7 +87,7 @@ class TravellerprofileEdit extends Component {
                 <nav class="navbar" style={{boxSizing : "border-box", backgroundColor: "#f4f4f4"}}>
                     <div class="container-fluid">
                         <div class="navbar-header">
-                            <a class="navbar-brand" href="#">
+                            <a class="navbar-brand" href="/home">
                                 <img style={{filter: "brightness(0)"}}src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/logo-bceheader.svg" />
                             </a>
                         </div>

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import {Redirect} from 'react-router';
 import cookie from 'react-cookies';
 import "../../App.css";
@@ -7,12 +6,47 @@ class Homepage extends Component {
     constructor(props){
         super(props);
         this.state = {
-            
+            location:"",
+            arrive:"",
+            depart:"",
+            guest:""
         }
         //Bind the handlers to this class
         this.logout = this.logout.bind(this);
         this.profileHandler=this.profileHandler.bind(this);
+        this.locationChangeHandler = this.locationChangeHandler.bind(this);
+        this.arriveChangeHandler = this.arriveChangeHandler.bind(this);
+        this.departChangeHandler = this.departChangeHandler.bind(this);
+        this.guestChangeHandler = this.guestChangeHandler.bind(this);
+        this.searchHandler = this.searchHandler.bind(this);
     }
+    searchHandler = (e) => {
+        e.preventDefault();
+        this.props.history.push({
+        pathname: "/searchtraveller",
+        state:this.state
+        });
+    }
+    locationChangeHandler = (e) =>{
+        this.setState({
+            location: e.target.value
+        })
+    };
+    arriveChangeHandler = (e) =>{
+        this.setState({
+            arrive: e.target.value
+        })
+    };
+    departChangeHandler = (e) =>{
+        this.setState({
+            depart: e.target.value
+        })
+    };
+    guestChangeHandler = (e) =>{
+        this.setState({
+            guest: e.target.value
+        })
+    };
     logout = (e) => {
         cookie.remove("traveller",{path : '/'})
         this.forceUpdate();
@@ -68,7 +102,7 @@ class Homepage extends Component {
                                     <div>
                                         <a href="#">Learn more</a>
                                     </div>
-                                    <div class="text-right">
+                                    <div className="text-right">
                                         <img alt="logo" src="//csvcus.homeaway.com/rsrcs/cdn-logos/1.5.1/bce/brand/homeaway/logo-simple.svg" />
                                     </div>
                                 </div>
@@ -79,7 +113,7 @@ class Homepage extends Component {
                 </div>
                 <div className="jumbotron jumbotron-fluid" style={{ background: "transparent" }}>
                     <div className="container">
-                        <h2 class="display-2" style={{ color: "white" }}>
+                        <h2 className="display-2" style={{ color: "white" }}>
                             <div>Book beach houses, cabins,</div>
                             <div>condos and more, worldwide</div> 
                         </h2>
@@ -99,35 +133,43 @@ class Homepage extends Component {
                             <div className="col-md-4">
                                 <input
                                 type="text"
-                                class="form-control"
+                                className="form-control"
                                 placeholder="Where do you want to go?"
+                                name="location"
+                                onChange={this.locationChangeHandler}
                                 />
                             </div>
                             <div className="col-md-2">
                                 <input
                                     type="date"
-                                    class="form-control"
+                                    className="form-control"
                                     placeholder="Arrive"
+                                    name="arrive"
+                                    onChange={this.arriveChangeHandler}
                                 />
                             </div>
                             <div className="col-md-2">
                                 <input
                                     type="date"
-                                    class="form-control"
+                                    className="form-control"
                                     placeholder="Depart"
+                                    name="depart"
+                                    onChange={this.departChangeHandler}
                                 />
                             </div>
                             <div className="col-md-2">
                                 <input
                                     type="number"
-                                    class="form-control"
+                                    className="form-control"
                                     placeholder="Guest"
+                                    onChange={this.guestChangeHandler}
                                 />
                             </div>
                             <div className="col-md-2">
                                 <button
                                     type="submit"
-                                    class="btn btn-lg btn-primary"
+                                    className="btn btn-lg btn-primary"
+                                    onClick={this.searchHandler}
                                     style={{ borderRadius: "30px", width: "200px" }}
                                 >
                                 Search

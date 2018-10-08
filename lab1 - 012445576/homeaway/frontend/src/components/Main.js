@@ -16,7 +16,8 @@ import OwnerDashboard from './Dashboard/OwnerDashboard';
 import TravellerDashboard from './Dashboard/TravellerDashboard';
 import TravellerProfile from './Profile/TravellerProfile';
 import TravellerProfileEdit from './Profile/TravellerProfileEdit';
-
+import TravellerSearch from './Property-search-view-book/TravellerSearch';
+import TravellerPropertyDetail from './Property-search-view-book/TravellerPropertyDetail';
 //Create a Main Component
 class Main extends Component {
     render(){
@@ -40,6 +41,8 @@ class Main extends Component {
                 <Route path="/travellerdashboard" component={TravellerDashboard}/>
                 <Route path="/travellerprofile" component={TravellerProfile}/>
                 <Route path="/travellerprofileedit" component={TravellerProfileEdit}/>
+                <Route path="/searchtraveller" component={TravellerSearch}/>
+                <Route path="/propertydetails" component={TravellerPropertyDetail}/>
             </div>
         )
     }

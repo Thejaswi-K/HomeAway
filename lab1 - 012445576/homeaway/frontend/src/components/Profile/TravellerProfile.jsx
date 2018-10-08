@@ -54,7 +54,7 @@ class TravellerProfile extends Component {
                 <nav class="navbar" style={{boxSizing : "border-box", backgroundColor: "#f4f4f4"}}>
                     <div class="container-fluid">
                         <div class="navbar-header">
-                            <a class="navbar-brand" href="#">
+                            <a class="navbar-brand" href="/home">
                                 <img style={{filter: "brightness(0)"}}src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/logo-bceheader.svg" />
                             </a>
                         </div>
