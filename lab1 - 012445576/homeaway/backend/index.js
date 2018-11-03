@@ -9,6 +9,23 @@ app.set('view engine', 'ejs');
 var mysql = require('mysql');
 var pool = require('./pool');
 
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const storage = multer.diskStorage({
+  
+  destination: (req, file, cb) => {
+    cb(null, "./uploads");
+    
+  },
+  filename: (req, file, cb) => {
+    
+    const newFilename = Date.now()+`${path.extname(file.originalname)}`;
+    cb(null, newFilename);
+   
+  }
+});
+const upload = multer({ storage });
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
@@ -82,7 +99,7 @@ app.post('/createtraveller',function(req,res){
             console.log("Inside Create Request Handler");
             var sql = "INSERT INTO travellertable VALUES ( " + 
             mysql.escape(req.body.firstname) + " , " + mysql.escape(req.body.lastname) + " , "+
-            mysql.escape(req.body.email) + "," + mysql.escape(req.body.username) + "," + mysql.escape(req.body.password) + " ) ";
+            mysql.escape(req.body.email) + "," + mysql.escape(req.body.username) + "," + mysql.escape(req.body.password) + "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+" ) ";
             console.log("inside create: ",sql);
             con.query(sql,function(err,result){
                 if(err){
@@ -185,7 +202,7 @@ app.post('/createproperty',function(req,res){
             console.log("Inside Create Request Handler");
             var sql = "INSERT INTO propertytable VALUES ( " + "NULL," + 
             mysql.escape(req.body.username) + " , " + mysql.escape(req.body.location) + " , "+
-            mysql.escape(req.body.headlines) + "," + mysql.escape(req.body.description) + "," + mysql.escape(req.body.accomodation) + "," + mysql.escape(req.body.bathrooms) + "," + mysql.escape(req.body.bedrooms) + "," + mysql.escape(req.body.propertyType) + "," + mysql.escape(req.body.bookingOption) + "," + mysql.escape(req.body.availabilityFrom) + "," + mysql.escape(req.body.availabilityTo) + "," + mysql.escape(req.body.price) + "," + mysql.escape(req.body.photo1) + "," + mysql.escape(req.body.photo2) + "," + mysql.escape(req.body.photo3) + "," + mysql.escape(req.body.photo4) + "," + mysql.escape(req.body.photo5) + " ) ";
+            mysql.escape(req.body.headlines) + "," + mysql.escape(req.body.description) + "," + mysql.escape(req.body.accomodation) + "," + mysql.escape(req.body.bathrooms) + "," + mysql.escape(req.body.bedrooms) + "," + mysql.escape(req.body.propertyType) + "," + mysql.escape(req.body.bookingOption) + "," + mysql.escape(req.body.availabilityFrom) + "," + mysql.escape(req.body.availabilityTo) + "," + mysql.escape(req.body.price) + "," + mysql.escape(req.body.photo1) + " ) ";
             console.log("inside create: ",sql);
             con.query(sql,function(err,result){
                 if(err){
@@ -237,18 +254,25 @@ app.get("/getownerproperties/:username", function(req, res) {
       }
     });
   });
+  var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database : "homeaway",
+  port: '3306'
+});
   app.get("/getownerdetails/:username", function(req, res) {
     var sql =
       "SELECT * FROM ownertable where username =" +
       mysql.escape(req.params.username);
     console.log("sql query is ", sql);
-    pool.getConnection(function(err, con) {
-      if (err) {
-        res.writeHead(400, {
-          "Content-Type": "text/plain"
-        });
-        res.end("Could Not Get Connection Object");
-      } else {
+    // pool.getConnection(function(err, con) {
+    //   if (err) {
+    //     res.writeHead(400, {
+    //       "Content-Type": "text/plain"
+    //     });
+    //     res.end("Could Not Get Connection Object");
+    //   } else {
         con.query(sql, function(err, result) {
           if (err) {
             res.writeHead(400, {
@@ -266,8 +290,8 @@ app.get("/getownerproperties/:username", function(req, res) {
             }
           }
         });
-      }
-    });
+    //   }
+    // });
   });
   app.get("/gettravellerdetails/:username", function(req, res) {
     var sql =
@@ -475,6 +499,24 @@ app.post("/travellerprofileedit", function(req, res) {
         });
       }
     });
+  });
+  app.post("/uploadpp", upload.single("PP"), (req, res) => {
+    
+    res.send(req.file.filename);
+  });
+  
+  
+  app.post("/uploadphoto", upload.array("image",7), (req, res) => {
+    res.send(req.files);
+  });
+  
+  app.post("/download/:file(*)", (req, res) => {
+    var file = req.params.file;
+    var fileLocation = path.join(__dirname + "/uploads", file);
+    var img = fs.readFileSync(fileLocation);
+    var base64img = new Buffer(img).toString("base64");
+    res.writeHead(200, { "Content-Type": "image/jpg" });
+    res.end(base64img);
   });
 app.listen(3001);
 console.log("Server Listening on port 3001");

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import {Redirect} from 'react-router';
 import cookie from 'react-cookies';
+import { connect } from 'react-redux';
+import { loginOwner }  from '../../actions';
+import { bindActionCreators } from '../../../../../../../../../../../AppData/Local/Microsoft/TypeScript/3.1/node_modules/redux';
 class OwnerLogin extends Component {
     constructor(props){
         super(props);
@@ -44,23 +47,24 @@ class OwnerLogin extends Component {
             password : this.state.password
         }
         //set the with credentials to true
-        axios.defaults.withCredentials = true;
-        //make a post request with the user data
-        axios.post('http://localhost:3001/loginowner',data)
-            .then(response => {
-                console.log("Status Code : ",response.status);
-                if(response.status === 200){
-                    this.setState({
-                        auth : true,
-                        ValidationMessage : ""
-                    })
-                }else{
-                    this.setState({
-                        authFlag : false,
-                        ValidationMessage : "Invalid Credentials" 
-                    })
-                }
-            })
+        // axios.defaults.withCredentials = true;
+        // //make a post request with the user data
+        // axios.post('http://localhost:3001/loginowner',data)
+        //     .then(response => {
+        //         console.log("Status Code : ",response.status);
+        //         if(response.status === 200){
+        //             this.setState({
+        //                 auth : true,
+        //                 ValidationMessage : ""
+        //             })
+        //         }else{
+        //             this.setState({
+        //                 authFlag : false,
+        //                 ValidationMessage : "Invalid Credentials" 
+        //             })
+        //         }
+        //     })
+        this.props.loginOwner(data);
        }
     render() { 
         let redirectVar = null;
@@ -159,5 +163,14 @@ class OwnerLogin extends Component {
          );
     }
 }
+
+function mapStateToProps(store){
+    return(
+        { loginMessage : store.owners.validationMessage}
+    );
+}
+function mapsDispatchToProps(dispatch){
+    return {...bindActionCreators({loginOwner}, dispatch)}
+}
  
-export default OwnerLogin;
+export default connect(mapStateToProps, mapsDispatchToProps)(OwnerLogin);

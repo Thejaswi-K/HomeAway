@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+//import axios from 'axios';
 import {Redirect} from 'react-router';
 import cookie from 'react-cookies';
+import { loginTraveller }  from '../../actions';
+import { bindActionCreators } from '../../../../../../../../../../../AppData/Local/Microsoft/TypeScript/3.1/node_modules/redux';
 class TravellerLogin extends Component {
     constructor(props){
         super(props);
@@ -43,30 +46,34 @@ class TravellerLogin extends Component {
             username : this.state.username,
             password : this.state.password
         }
-        //set the with credentials to true
-        axios.defaults.withCredentials = true;
-        //make a post request with the user data
-        axios.post('http://localhost:3001/logintraveller',data)
-            .then(response => {
-                console.log("Status Code : ",response.status);
-                if(response.status === 200){
-                    this.setState({
-                        auth : true,
-                        ValidationMessage : ""
-                    })
-                }else{
-                    this.setState({
-                        authFlag : false,
-                        ValidationMessage : "Invalid Credentials" 
-                    })
-                }
-            })
+        
+        // //set the with credentials to true
+        // axios.defaults.withCredentials = true;
+        // //make a post request with the user data
+        // axios.post('http://localhost:3001/logintraveller',data)
+        //     .then(response => {
+        //         console.log("Status Code : ",response.status);
+        //         if(response.status === 200){
+        //             this.setState({
+        //                 auth : true,
+        //                 ValidationMessage : ""
+        //             })
+        //         }else{
+        //             this.setState({
+        //                 authFlag : false,
+        //                 ValidationMessage : "Invalid Credentials" 
+        //             })
+        //         }
+        //     })
+        this.props.loginTraveller(data);
+
        }
     render() { 
         let redirectVar = null;
         if(cookie.load('traveller')){
             redirectVar = <Redirect to= "/home"/>
         }
+        console.log("Login message -> ", this.props.loginMessage);
         return ( 
             <div
                 style={{
@@ -136,5 +143,13 @@ class TravellerLogin extends Component {
         );
     }
 }
- 
-export default TravellerLogin;
+function mapStateToProps(store){
+    return(
+        { loginMessage : store.travellers.validationMessage}
+    );
+}
+
+function mapsDispatchToProps(dispatch){
+    return {...bindActionCreators({loginTraveller}, dispatch)}
+}
+export default connect(mapStateToProps, mapsDispatchToProps)(TravellerLogin);

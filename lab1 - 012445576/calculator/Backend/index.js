@@ -8,7 +8,7 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 app.post("/calculate", function(req, res) {
     let result = 0;
-    //console.log(req.body);
+    console.log(req.body);
     result = eval(req.body.exp)
     res.send({"exp" : result})
 });
