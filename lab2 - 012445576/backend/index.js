@@ -8,6 +8,7 @@ var cors = require('cors');
 app.set('view engine', 'ejs');
 var mysql = require('mysql');
 var pool = require('./pool');
+var crypt = require("./db/crypt");
 
 const multer = require("multer");
 const path = require("path");
@@ -54,205 +55,86 @@ var Owners = require('./models/owners.js');
 // var {mongoose} = require('./db/mongoose');
 // const mongoClient = require('mongodb').MongoClient;
 app.post('/logintraveller',function(req,res){
-    // console.log("Inside Login Post Request");
-    // var username = req.body.username;
-    // var password = req.body.password;
-    // var sql = "SELECT * FROM travellertable WHERE username = " + mysql.escape(username) + " and password = " + mysql.escape(password);
-    // console.log(sql);
-
-    // pool.getConnection(function(err,con){
-    //     if(err){
-    //         console.log("inside login if")
-    //         res.writeHead(400,{
-    //             'Content-Type' : 'text/plain'
-    //         })
-    //         res.end("Could Not Get Connection Object");
-    //     }else{
-    //         console.log("inside login else")
-    //         con.query(sql,function(err,result){
-    //             if(err){
-                    // res.writeHead(400,{
-                    //     'Content-Type' : 'text/plain'
-                    // })
-                    // res.end("Invalid Credentials");
-    //             }else{
-                    // if (result.length != 0) {
-                    //     res.cookie('traveller',username,{maxAge: 900000, httpOnly: false, path : '/'});
-                    // }
-                    // req.session.user = result;
-                    // res.writeHead(200,{
-                    //     'Content-Type' : 'text/plain'
-                    // })
-                    // res.end("Successful Login");
-    //             }
-    //         });
-    //     }
-    // });
     console.log("inside traveler login")
-    
     var username=req.body.username;
     var password=req.body.password;
     console.log(req.body.username, password);
-
-    Travellers.findOne({'username':username}, function (error, traveler) {
-          console.log(traveler);
-            if(!traveler || error||traveler.password !== password){
-                console.log('error' );
-                res.writeHead(400,{
-                  'Content-Type' : 'text/plain'
-              })
-              res.end("Invalid Credentials");
-                
-            }
-            else {
-                        console.log("login successful....", traveler.password);
-                        console.log("User Details username",traveler.username);
-
-                        if (traveler.length != 0) {
-                          res.cookie('traveller',username,{maxAge: 900000, httpOnly: false, path : '/'});
-                      }
-                      // req.session.user = result;
-                      res.writeHead(200,{
-                          'Content-Type' : 'text/plain'
-                      })
-                      res.end("valid Credentials");
-                        
-                        
-                    }
-                    
-
-
-                });
-
+    Travellers.findOne({'username':username}, function (error, traveller) {
+      console.log(traveller);
+      crypt.compareHash(password,traveller.password,function(err,isMatch){
+        if(isMatch&&!err){
+          console.log("login successful....", traveller.password);
+          console.log("User Details username",traveller.username);
+          if (traveller.length != 0) {
+              res.cookie('traveller',username,{maxAge: 900000, httpOnly: false, path : '/'});
+          }
+          // req.session.user = result;
+          res.writeHead(200,{
+            'Content-Type' : 'text/plain'
+          })
+          res.end("valid Credentials");   
+        }
+        else{
+          console.log('error' );
+          res.writeHead(400,{
+            'Content-Type' : 'text/plain'
+           })
+          res.end("Invalid Credentials");
+        }
+      })
+  });
 });
 
 app.post('/createtraveller',function(req,res){
   var reqPassword = req.body.password;
-    
-    var reqUsername = req.body.username;
-    var firstname = req.body.firstname;
-    var lastname = req.body.lastname;
-    var email = req.body.email;
-
-    
-
+  var reqUsername = req.body.username;
+  var firstname = req.body.firstname;
+  var lastname = req.body.lastname;
+  var email = req.body.email;
+  crypt.createHash(reqPassword,
+  function(resp){
+    hashedPassword = resp;
     Travellers.findOne({'username':reqUsername},function(err,traveller){
-        if(err){
-            throw err;
-        }
-        else if(traveller){
-            res.status = 401;
-            console.log("db user",traveller);
-            res.message= 'This traveler already exists';
-           
-            console.log("401 username");
-
-        }
-        else{
-            var newUser = new Travellers();
-            newUser.username = reqUsername;
-            newUser.email = email;
-            newUser.password= reqPassword;
-            newUser.firstname = firstname;
-            newUser.lastname = lastname;
-            console.log("new user save");
-            newUser.save(function(err){
-            if(err)
-                throw err;
-            else{
-                console.log("user saved");        
-            }
-        });
+      if(err){
+          throw err;
       }
+      else if(traveller){
+          res.status = 401;
+          console.log("db user",traveller);
+          res.message= 'This owner already exists';
+          console.log("401 username");
+      }
+      else{
+          var newUser = new Travellers();
+          newUser.username = reqUsername;
+          newUser.email = email;
+          newUser.password= hashedPassword;
+          newUser.firstname = firstname;
+          newUser.lastname = lastname;
+          console.log("new user save");      
+          newUser.save(function(err){
+              if(err)
+                throw err;
+              else{
+                console.log("user saved");                
+              }
+          });
+      }
+  });
+  },function(err){
+    console.log(err);
+    failureCallback();
+  });    
 });
-
-
-    // pool.getConnection(function(err,con){
-    //     if(err){
-    //         console.log("inside login if")
-    //         res.writeHead(400,{
-    //             'Content-Type' : 'text/plain'
-    //         })
-    //         res.end("Could Not Get Connection Object");
-    //     }else{
-    //         console.log("Inside Create Request Handler");
-    //         var sql = "INSERT INTO travellertable VALUES ( " + 
-    //         mysql.escape(req.body.firstname) + " , " + mysql.escape(req.body.lastname) + " , "+
-    //         mysql.escape(req.body.email) + "," + mysql.escape(req.body.username) + "," + mysql.escape(req.body.password) + "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+ "," + "NULL"+" ) ";
-    //         console.log("inside create: ",sql);
-    //         con.query(sql,function(err,result){
-    //             if(err){
-    //                 console.log("inside create, if");
-    //                 res.writeHead(400,{
-    //                     'Content-Type' : 'text/plain'
-    //                 })
-    //                 res.end("Error While Creating traveller");
-    //             }else{
-    //                 console.log("inside create, else");
-    //                 res.writeHead(200,{
-    //                     'Content-Type' : 'text/plain'
-    //                 })
-    //                 res.end('traveller Created Successfully');
-    //             }
-    //         });
-    //     }
-     });
-
-
 app.post('/loginowner',function(req,res){
-    // console.log("Inside Login Post Request");
-    // var username = req.body.username;
-    // var password = req.body.password;
-    // var sql = "SELECT * FROM ownertable WHERE username = " + mysql.escape(username) + " and password = " + mysql.escape(password);
-    // console.log(sql);
-
-    // pool.getConnection(function(err,con){
-    //     if(err){
-    //         console.log("inside login if")
-    //         res.writeHead(400,{
-    //             'Content-Type' : 'text/plain'
-    //         })
-    //         res.end("Could Not Get Connection Object");
-    //     }else{
-    //         console.log("inside login else")
-    //         con.query(sql,function(err,result){
-    //             if(err){
-    //                 res.writeHead(400,{
-    //                     'Content-Type' : 'text/plain'
-    //                 })
-    //                 res.end("Invalid Credentials");
-    //             }else{
-    //                 console.log(result);
-    //                 console.log("inside else inside else")
-    //                 if (result.length != 0) {
-    //                     res.cookie('owner',username,{maxAge: 900000, httpOnly: false, path : '/'});
-    //                 }
-    //                 req.session.user = result;
-    //                 res.writeHead(200,{
-    //                     'Content-Type' : 'text/plain'
-    //                 })
-    //                 res.end("Successful Login");
-    //             }
-    //         });
-    //     }
-    // });
     console.log("inside owner login")
-    
     var username=req.body.username;
     var password=req.body.password;
     console.log(req.body.username, password);
-
     Owners.findOne({'username':username}, function (error, owner) {
           console.log(owner);
-          if(!owner || error||owner.password !== password){
-              console.log('error' );
-              res.writeHead(400,{
-                'Content-Type' : 'text/plain'
-          })
-          res.end("Invalid Credentials");
-                
-          }
-          else {
+          crypt.compareHash(password,owner.password,function(err,isMatch){
+            if(isMatch&&!err){
               console.log("login successful....", owner.password);
               console.log("User Details username",owner.username);
               if (owner.length != 0) {
@@ -262,80 +144,59 @@ app.post('/loginowner',function(req,res){
               res.writeHead(200,{
                 'Content-Type' : 'text/plain'
               })
-              res.end("valid Credentials");      
-          }
+              res.end("valid Credentials");   
+            }
+            else{
+              console.log('error' );
+              res.writeHead(400,{
+                'Content-Type' : 'text/plain'
+               })
+              res.end("Invalid Credentials");
+            }
+          })
     });
 });
 app.post('/createowner',function(req,res){
-    // pool.getConnection(function(err,con){
-    //     if(err){
-    //         console.log("inside login if")
-    //         res.writeHead(400,{
-    //             'Content-Type' : 'text/plain'
-    //         })
-    //         res.end("Could Not Get Connection Object");
-    //     }else{
-    //         console.log("Inside Create Request Handler");
-    //         var sql = "INSERT INTO ownertable VALUES ( " + 
-    //         mysql.escape(req.body.firstname) + " , " + mysql.escape(req.body.lastname) + " , "+
-    //         mysql.escape(req.body.email) + "," + mysql.escape(req.body.username) + "," + mysql.escape(req.body.password) + " ) ";
-    //         console.log("inside create: ",sql);
-    //         con.query(sql,function(err,result){
-    //             if(err){
-    //                 console.log("inside create, if");
-    //                 res.writeHead(400,{
-    //                     'Content-Type' : 'text/plain'
-    //                 })
-    //                 res.end("Error While Creating traveller");
-    //             }else{
-    //                 console.log("inside create, else");
-    //                 res.writeHead(200,{
-    //                     'Content-Type' : 'text/plain'
-    //                 })
-    //                 res.end('traveller Created Successfully');
-    //             }
-    //         });
-    //     }
-    // });
+    
     var reqPassword = req.body.password;
     var reqUsername = req.body.username;
     var firstname = req.body.firstname;
     var lastname = req.body.lastname;
     var email = req.body.email;
-    Owners.findOne({'username':reqUsername},function(err,owner){
-      if(err){
-          throw err;
-      }
-      else if(owner){
-          res.status = 401;
-          console.log("db user",owner);
-          res.message= 'This owner already exists';
-         
-          console.log("401 username");
-
-      }
-      else{
-          var newUser = new Owners();
-
-          newUser.username = reqUsername;
-          newUser.email = email;
-          newUser.password= reqPassword;
-          newUser.firstname = firstname;
-          newUser.lastname = lastname;
-
-
-          console.log("new user save");      
-          newUser.save(function(err){
-              if(err)
-                throw err;
-              else{
-                console.log("user saved");                
-              }
-          });
-
-      }
-
-  });
+    crypt.createHash(reqPassword,
+      function(resp){
+        hashedPassword = resp;
+        Owners.findOne({'username':reqUsername},function(err,owner){
+          if(err){
+              throw err;
+          }
+          else if(owner){
+              res.status = 401;
+              console.log("db user",owner);
+              res.message= 'This owner already exists';
+              console.log("401 username");
+          }
+          else{
+              var newUser = new Owners();
+              newUser.username = reqUsername;
+              newUser.email = email;
+              newUser.password= hashedPassword;
+              newUser.firstname = firstname;
+              newUser.lastname = lastname;
+              console.log("new user save");      
+              newUser.save(function(err){
+                  if(err)
+                    throw err;
+                  else{
+                    console.log("user saved");                
+                  }
+              });
+          }
+      });
+      },function(err){
+        console.log(err);
+        failureCallback();
+      });
 });
 app.post('/createproperty',function(req,res){
     pool.getConnection(function(err,con){
