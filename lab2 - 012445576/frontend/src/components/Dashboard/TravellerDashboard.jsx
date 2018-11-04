@@ -27,7 +27,7 @@ class TravellerDashboard extends Component {
           .then(response => {
             console.log("gettravellertrips",response.data);
             this.setState({
-              tripList: response.data
+              tripList: response.data[0].trips
             });
           }).catch(function(error) {
             console.log(error);

@@ -17,6 +17,8 @@ require("./config/passport")(passport);
 app.use(passport.initialize());
 var Travellers = require('./models/travellers.js');
 var Owners = require('./models/owners.js');
+var Trip = require('./models/trips.js');
+var Properties = require('./models/properties.js');
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -217,67 +219,50 @@ app.post('/createowner',function(req,res){
 });
 
 app.post('/createproperty',function(req,res){
-    pool.getConnection(function(err,con){
-        if(err){
-            console.log("inside login if")
-            res.writeHead(400,{
-                'Content-Type' : 'text/plain'
-            })
-            res.end("Could Not Get Connection Object");
-        }else{
-            console.log("Inside Create Request Handler");
-            var sql = "INSERT INTO propertytable VALUES ( " + "NULL," + 
-            mysql.escape(req.body.username) + " , " + mysql.escape(req.body.location) + " , "+
-            mysql.escape(req.body.headlines) + "," + mysql.escape(req.body.description) + "," + mysql.escape(req.body.accomodation) + "," + mysql.escape(req.body.bathrooms) + "," + mysql.escape(req.body.bedrooms) + "," + mysql.escape(req.body.propertyType) + "," + mysql.escape(req.body.bookingOption) + "," + mysql.escape(req.body.availabilityFrom) + "," + mysql.escape(req.body.availabilityTo) + "," + mysql.escape(req.body.price) + "," + mysql.escape(req.body.photo1) + " ) ";
-            console.log("inside create: ",sql);
-            con.query(sql,function(err,result){
-                if(err){
-                    console.log("inside create, if");
-                    res.writeHead(400,{
-                        'Content-Type' : 'text/plain'
-                    })
-                    res.end("Error While Creating property");
-                }else{
-                    console.log("inside create, else");
-                    res.writeHead(200,{
-                        'Content-Type' : 'text/plain'
-                    })
-                    res.end('property Created Successfully');
-                }
-            });
-        }
-    });
+    
+  var newProperty = new Properties();
+  newProperty.username = req.body.username;    
+  newProperty.location = req.body.location;    
+  newProperty.headlines = req.body.headlines;    
+  newProperty.description = req.body.description;    
+  newProperty.accomodation = req.body.accomodation;    
+  newProperty.bathrooms = req.body.bathrooms;    
+  newProperty.bedrooms = req.body.bedrooms;
+  newProperty.propertytype = req.body.propertyType;
+  newProperty.bookingoption = req.body.bookingOption;
+  newProperty.availabilityfrom = req.body.availabilityFrom;  
+  newProperty.availabilityto = req.body.availabilityTo;  
+  newProperty.price = req.body.price; 
+  //newProperty.photo1 = req.body.photo1;
+  console.log("new user save");
+  newProperty.save(function(err){
+    if(err)
+      throw err;
+    else{
+      console.log("inside create, else");
+      res.writeHead(200,{
+        'Content-Type' : 'text/plain'
+      })
+      res.end('property Created Successfully');
+    }   
+  });
 });
 
 app.get("/getownerproperties/:username", function(req, res) {
-    var sql =
-      "SELECT * FROM propertytable where username =" +
-      mysql.escape(req.params.username);
-    console.log("sql query is ", sql);
-    pool.getConnection(function(err, con) {
+    Properties.find({'username': req.params.username}, function (err, property) {
       if (err) {
-        res.writeHead(400, {
-          "Content-Type": "text/plain"
-        });
-        res.end("Could Not Get Connection Object");
-      } else {
-        con.query(sql, function(err, result) {
-          if (err) {
-            res.writeHead(400, {
-              "Content-Type": "text/plain"
-            });
-            res.end("Could Not Get Connection Object");
-          } else {
-            if (result < 1) {
-              res.end("result is empty");
-            } else {
+          throw err;
+      }
+      else {
+          if(property){
               res.writeHead(200, {
                 "Content-Type": "application/json"
               });
-              res.end(JSON.stringify(result));
-            }
+              res.end(JSON.stringify(property));     
           }
-        });
+          else{
+              throw err;
+          }
       }
     });
   });
@@ -290,36 +275,23 @@ app.get("/getownerproperties/:username", function(req, res) {
 });
 
   app.get("/getownerdetails/:username", function(req, res) {
-    var sql =
-      "SELECT * FROM ownertable where username =" +
-      mysql.escape(req.params.username);
-    console.log("sql query is ", sql);
-    // pool.getConnection(function(err, con) {
-    //   if (err) {
-    //     res.writeHead(400, {
-    //       "Content-Type": "text/plain"
-    //     });
-    //     res.end("Could Not Get Connection Object");
-    //   } else {
-        con.query(sql, function(err, result) {
-          if (err) {
-            res.writeHead(400, {
-              "Content-Type": "text/plain"
-            });
-            res.end("Could Not Get Connection Object");
-          } else {
-            if (result < 1) {
-              res.end("result is empty");
-            } else {
+   
+    Owners.find({'username': req.params.username}, function (err, owner) {
+      if (err) {
+          throw err;
+      }
+      else {
+          if(owner){
               res.writeHead(200, {
                 "Content-Type": "application/json"
               });
-              res.end(JSON.stringify(result));
-            }
+              res.end(JSON.stringify(owner));     
           }
-        });
-    //   }
-    // });
+          else{
+              throw err;
+          }
+      }
+    });
   });
 
   app.get("/gettravellerdetails/:username", function(req, res) {
@@ -363,144 +335,111 @@ app.post("/travellerprofileedit", function(req, res) {
   });
 
   app.post("/searchresults", function(req, res) {
-    console.log("Inside search Request Handler");
-    var sql =
-      "SELECT * FROM propertytable WHERE `location` = " +mysql.escape(req.body.location)+" AND `accomodation`> "+mysql.escape(req.body.guest)+" AND `availabilityfrom`< "+mysql.escape(req.body.arrive)+" AND `availabilityto` > "+mysql.escape(req.body.depart);
-    console.log("Query is ", sql);
-    pool.getConnection(function(err, con) {
+    
+    Properties.find({'location': req.body.location,'accomodation':req.body.guest,'availabilityfrom':{$lt : req.body.arrive},'availabilityto':{$gt : req.body.depart}}, function (err, searchdetails) {
       if (err) {
-        res.writeHead(400, {
-          "Content-Type": "text/plain"
-        });
-        res.end("Could Not Get Connection Object");
-      } else {
-        con.query(sql, function(err, result) {
-          if (err) {
-              console.log("not executing")
-            res.writeHead(400, {
-              "Content-Type": "text/plain"
-            });
-            res.end("Error creating owner");
-          } else {
-            res.writeHead(200, {
-              "Content-Type": "text/plain"
-            });
-            console.log(result);
-            res.end(JSON.stringify(result));
-           
+          throw err;
+      }
+      else {
+          if(searchdetails){
+              res.writeHead(200, {
+                "Content-Type": "application/json"
+              });
+              res.end(JSON.stringify(searchdetails));     
           }
-        });
+          else{
+              throw err;
+          }
       }
     });
   });
 
   app.get("/getpropertydetails/:propertyid", function(req, res) {
-    var sql =
-      "SELECT * FROM propertytable where propertyid =" +
-      mysql.escape(req.params.propertyid);
-    console.log("sql query is ", sql);
-    pool.getConnection(function(err, con) {
+    
+    Properties.find({'_id': req.params.propertyid}, function (err, propdetails) {
       if (err) {
-        res.writeHead(400, {
-          "Content-Type": "text/plain"
-        });
-        res.end("Could Not Get Connection Object");
-      } else {
-        con.query(sql, function(err, result) {
-          if (err) {
-            res.writeHead(400, {
-              "Content-Type": "text/plain"
-            });
-            res.end("Could Not Get Connection Object");
-          } else {
-            if (result < 1) {
-              res.end("result is empty");
-            } else {
+          throw err;
+      }
+      else {
+          if(propdetails){
               res.writeHead(200, {
                 "Content-Type": "application/json"
               });
-              res.end(JSON.stringify(result));
-            }
+              res.end(JSON.stringify(propdetails));     
           }
-        });
+          else{
+              throw err;
+          }
       }
     });
   });
 
   app.post("/bookproperty", function(req, res) {
-    console.log("inside book property")
-    var sql =
-      "INSERT INTO `triptable` VALUES ( " +
-      "NULL, " + mysql.escape(req.body.username) +
-      " , " +
-      mysql.escape(req.body.from) +
-      " , " +
-      mysql.escape(req.body.to) + 
-      " , " +
-      mysql.escape(req.body.propertyid) +
-      ")";
-      console.log(sql);
-    pool.getConnection(function(err, con) {
-      if (err) {
-          console.log("inside connection if")
-        res.writeHead(400, {
-          "Content-Type": "text/plain"
-        });
-        res.end("Could Not Get Connection Object");
-      } else {
-          console.log("inside connection else")
-        con.query(sql, function(err, result) {
-          if (err) {
-              console.log("inside query if")
-            res.writeHead(400, {
-              "Content-Type": "text/plain"
-            });
-            res.end("Error creating owner");
-          } else {   
-              console.log("inside query else")         
-                res.writeHead(200, {
-                  "Content-Type": "text/plain"
-                });
-                res.end("trip created  Successfully");            
-          }
-        });
-      }
+    
+    var newBooking = new Trip();
+    newBooking.bookername = req.body.username;    
+    newBooking.fromdate = req.body.from;    
+    newBooking.todate = req.body.to;    
+    newBooking.propertyid = req.body.propertyid;    
+    
+    //newProperty.photo1 = req.body.photo1;
+    console.log("new user save");
+    newBooking.save(function(err){
+      if(err)
+        throw err;
+      else{
+        console.log("inside create, else");
+        res.writeHead(200,{
+          'Content-Type' : 'text/plain'
+        })
+        res.end('Booking Created Successfully');
+      }   
     });
   });
 
   app.get("/gettravellertrips/:username", function(req, res) {
-    var sql =
-      "SELECT triptable.fromdate, triptable.todate, propertytable.* FROM triptable INNER JOIN propertytable ON triptable.propertyid = propertytable.propertyid WHERE triptable.bookername =" +
-      mysql.escape(req.params.username);
-    console.log("sql query is ", sql);
-    pool.getConnection(function(err, con) {
-      if (err) {
-        res.writeHead(400, {
-          "Content-Type": "text/plain"
-        });
-        res.end("Could Not Get Connection Object");
-      } else {
-        con.query(sql, function(err, result) {
-          if (err) {
-            res.writeHead(400, {
-              "Content-Type": "text/plain"
-            });
-            res.end("Could Not Get Connection Object");
-          } else {
-            if (result < 1) {
-              console.log("result empty");
-              res.end("result is empty");
-            } else {
-              res.writeHead(200, {
-                "Content-Type": "application/json"
-              });
-              console.log(JSON.stringify(result));
-              res.end(JSON.stringify(result));
-            }
-          }
-        });
-      }
-    });
+    // var sql =
+    //   "SELECT triptable.fromdate, triptable.todate, propertytable.* FROM triptable INNER JOIN propertytable ON triptable.propertyid = propertytable.propertyid WHERE triptable.bookername =" +
+    //   mysql.escape(req.params.username);
+    // console.log("sql query is ", sql);
+    // pool.getConnection(function(err, con) {
+    //   if (err) {
+    //     res.writeHead(400, {
+    //       "Content-Type": "text/plain"
+    //     });
+    //     res.end("Could Not Get Connection Object");
+    //   } else {
+    //     con.query(sql, function(err, result) {
+    //       if (err) {
+    //         res.writeHead(400, {
+    //           "Content-Type": "text/plain"
+    //         });
+    //         res.end("Could Not Get Connection Object");
+    //       } else {
+    //         if (result < 1) {
+    //           console.log("result empty");
+    //           res.end("result is empty");
+    //         } else {
+    //           res.writeHead(200, {
+    //             "Content-Type": "application/json"
+    //           });
+    //           console.log(JSON.stringify(result));
+    //           res.end(JSON.stringify(result));
+    //         }
+    //       }
+    //     });
+    //   }
+    // });
+    Trip.aggregate([{$lookup:{
+      "from": "properties",
+      "localField": "propertyid",
+      "foreignField":"_id",
+      "as": "trips"
+      
+    }}]).exec(function(err, tripdetails){
+      console.log(tripdetails);
+      res.end(JSON.stringify(tripdetails));
+    })
   });
 
   app.post("/uploadpp", upload.single("PP"), (req, res) => {

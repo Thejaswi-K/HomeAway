@@ -141,7 +141,7 @@ class TravellerSearch extends Component {
                                                 paddingLeft: "20px",
                                                 paddingRight: "20px"
                                                 }}
-                                                value = {property.propertyid}
+                                                value = {property._id}
                                                 onClick={this.viewButton}
                                                 type="button"
                                                 class="btn btn-primary"

@@ -25,7 +25,7 @@ class TravellerPropertyDetail extends Component {
         })
     };
     componentDidMount() {
-        
+        console.log(this.state);
         axios.defaults.withCredentials = true;
         axios
           .get("http://localhost:3001/getpropertydetails/" + this.state.propertyid)
@@ -51,16 +51,16 @@ class TravellerPropertyDetail extends Component {
         
     }
     bookButton = (e) =>{
-        console.log(this.state);
+        console.log("state",this.state);
         e.preventDefault();
         axios.defaults.withCredentials = true;
         const data = {
           username : cookie.load("traveller"),
-          propertyid : this.state.propertyData[0].propertyid,
+          propertyid : this.state.propertyid,
           from : this.state.from,
           to : this.state.to
       };
-      console.log(data);
+      console.log(data.propertyid);
        
         axios
         .post("http://localhost:3001/bookproperty", data)
@@ -96,7 +96,7 @@ class TravellerPropertyDetail extends Component {
                 <nav class="navbar" style={{boxSizing : "border-box", backgroundColor: "#f4f4f4"}}>
                     <div class="container-fluid">
                         <div class="navbar-header">
-                            <a class="navbar-brand" href="/locationpostwel">
+                            <a class="navbar-brand" href="/home">
                                 <img  src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/logo-bceheader.svg" />
                             </a>
                         </div>
