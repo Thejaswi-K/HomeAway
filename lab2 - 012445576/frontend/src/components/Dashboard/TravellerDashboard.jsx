@@ -27,7 +27,7 @@ class TravellerDashboard extends Component {
           .then(response => {
             console.log("gettravellertrips",response.data);
             this.setState({
-              tripList: response.data[0].trips
+              tripList: response.data
             });
           }).catch(function(error) {
             console.log(error);
@@ -150,7 +150,8 @@ class TravellerDashboard extends Component {
                 </div>
                 <div className="card" style={{backgroundColor: "#f4f4f4", marginLeft:"350px", width:"80rem"}}>
                     <h4 style={{ marginLeft: "120px", marginTop: "40px" }}>Trips by you</h4>
-                    {allTrips.map((trip, i) => (
+                    {allTrips.map((tripdata, i) => (
+                        
                         <div
                         className="card"
                         style={{
@@ -171,26 +172,27 @@ class TravellerDashboard extends Component {
                             style={{ margin: "10px" }}
                             >
                             <div className="card-body">
-                                <h4>{trip.headlines}</h4>
+                                <h4>{tripdata.trips.headlines}</h4>
+                                {console.log(tripdata)}
                                 <dl class="row">
                                     <dt class="col-sm-3">Description :</dt>
-                                    <dd class="col-sm-9"> {trip.description}</dd>
+                                    <dd class="col-sm-9"> {tripdata.trips[0].description}</dd>
                                     <dt class="col-sm-3">Location :</dt>
-                                    <dd class="col-sm-9"> {trip.location}</dd>
+                                    <dd class="col-sm-9"> {tripdata.trips[0].location}</dd>
                                     <dt class="col-sm-3">Price :</dt>
-                                    <dd class="col-sm-9"> $ {trip.price}</dd>
+                                    <dd class="col-sm-9"> $ {tripdata.trips[0].price}</dd>
                                     <dt class="col-sm-3">Type :</dt>
-                                    <dd class="col-sm-9"> {trip.propertytype}</dd>
+                                    <dd class="col-sm-9"> {tripdata.trips[0].propertytype}</dd>
                                     <dt class="col-sm-3">from :</dt>
-                                    <dd class="col-sm-9"> {trip.availabilityfrom}</dd>
+                                    <dd class="col-sm-9"> {tripdata.trips[0].availabilityfrom}</dd>
                                     <dt class="col-sm-3">to :</dt>
-                                    <dd class="col-sm-9"> {trip.availabilityto}</dd>
+                                    <dd class="col-sm-9"> {tripdata.trips[0].availabilityto}</dd>
                                     <dt class="col-sm-3">Accomodates:</dt>
-                                    <dd class="col-sm-9"> {trip.accomodation}</dd>
+                                    <dd class="col-sm-9"> {tripdata.trips[0].accomodation}</dd>
                                     <dt class="col-sm-3">Bedrooms :</dt>
-                                    <dd class="col-sm-9"> {trip.bedrooms}</dd> 
+                                    <dd class="col-sm-9"> {tripdata.trips[0].bedrooms}</dd> 
                                     <dt class="col-sm-3">Bathrooms :</dt>
-                                    <dd class="col-sm-9"> {trip.bathrooms}</dd>    
+                                    <dd class="col-sm-9"> {tripdata.trips[0].bathrooms}</dd>    
                                 </dl>  
                             </div>
                             </li>
