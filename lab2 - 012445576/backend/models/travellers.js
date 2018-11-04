@@ -27,6 +27,36 @@ var Traveller = new Schema({
     },
     password :{
         type: String
+    },
+    phonenumber :{
+        type: String
+    },
+    aboutme :{
+        type: String
+    },
+    school :{
+        type: String
+    },
+    company :{
+        type: String
+    },
+    hometown :{
+        type: String
+    },
+    city :{
+        type: String
+    },
+    country :{
+        type: String
+    },
+    gender :{
+        type: String
+    },
+    languages :{
+        type: String
+    },
+    profileimage :{
+        type: String
     }
 });
 

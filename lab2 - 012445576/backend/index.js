@@ -14,8 +14,9 @@ var passport = require("passport");
 var config = require("./config/settings");
 var requireAuth = passport.authenticate("jwt", {session: false});
 require("./config/passport")(passport);
-app.use(passport.initialize())
-
+app.use(passport.initialize());
+var Travellers = require('./models/travellers.js');
+var Owners = require('./models/owners.js');
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -33,6 +34,7 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage });
+
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
@@ -56,8 +58,7 @@ app.use(function(req, res, next) {
     res.setHeader('Cache-Control', 'no-cache');
     next();
 });
-var Travellers = require('./models/travellers.js');
-var Owners = require('./models/owners.js');
+
 //var {mongoose} = require('./db/mongoose');
 const mongoClient = require('mongodb').MongoClient;
 app.post('/logintraveller',function(req,res){
@@ -136,6 +137,7 @@ app.post('/createtraveller',function(req,res){
     failureCallback();
   });    
 });
+
 app.post('/loginowner',function(req,res){
     console.log("inside owner login")
     var username=req.body.username;
@@ -147,9 +149,9 @@ app.post('/loginowner',function(req,res){
             if(isMatch&&!err){
               console.log("login successful....", owner.password);
               console.log("User Details username",owner.username);
-              var token = jwt.sign({username},config.secret, { expiresIn:900000})
+              //var token = jwt.sign({username},config.secret, { expiresIn:900000})
               if (owner.length != 0) {
-                  res.cookie('owner',token,{maxAge: 900000, httpOnly: false, path : '/'});
+                  res.cookie('owner',username,{maxAge: 900000, httpOnly: false, path : '/'});
               }
               // req.session.user = result;
               res.writeHead(200,{
@@ -167,8 +169,8 @@ app.post('/loginowner',function(req,res){
           })
     });
 });
-app.post('/createowner',function(req,res){
-    
+
+app.post('/createowner',function(req,res){    
     var reqPassword = req.body.password;
     var reqUsername = req.body.username;
     var firstname = req.body.firstname;
@@ -213,6 +215,7 @@ app.post('/createowner',function(req,res){
         failureCallback();
       });
 });
+
 app.post('/createproperty',function(req,res){
     pool.getConnection(function(err,con){
         if(err){
@@ -245,6 +248,7 @@ app.post('/createproperty',function(req,res){
         }
     });
 });
+
 app.get("/getownerproperties/:username", function(req, res) {
     var sql =
       "SELECT * FROM propertytable where username =" +
@@ -284,6 +288,7 @@ app.get("/getownerproperties/:username", function(req, res) {
   database : "homeaway",
   port: '3306'
 });
+
   app.get("/getownerdetails/:username", function(req, res) {
     var sql =
       "SELECT * FROM ownertable where username =" +
@@ -316,76 +321,47 @@ app.get("/getownerproperties/:username", function(req, res) {
     //   }
     // });
   });
+
   app.get("/gettravellerdetails/:username", function(req, res) {
-    var sql =
-      "SELECT * FROM travellertable where username =" +
-      mysql.escape(req.params.username);
-    console.log("sql query is ", sql);
-    pool.getConnection(function(err, con) {
-      if (err) {
-        res.writeHead(400, {
-          "Content-Type": "text/plain"
-        });
-        res.end("Could Not Get Connection Object");
-      } else {
-        con.query(sql, function(err, result) {
-          if (err) {
-            res.writeHead(400, {
-              "Content-Type": "text/plain"
-            });
-            res.end("Could Not Get Connection Object");
-          } else {
-            if (result < 1) {
-              res.end("result is empty");
-            } else {
-              res.writeHead(200, {
-                "Content-Type": "application/json"
-              });
-              res.end(JSON.stringify(result));
+    Travellers.find({'username': req.params.username}, function (err, userProfile) {
+        if (err) {
+            throw err;
+        }
+        else {
+            if(userProfile){
+                res.writeHead(200, {
+                  "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify(userProfile));     
             }
-          }
-        });
-      }
+            else{
+                throw err;
+            }
+        }
     });
   });
+
 app.post("/travellerprofileedit", function(req, res) {
     var data = req.body;
     console.log("username is ", data.username);
-    var sql = "UPDATE `travellertable` SET  `firstname` = " + mysql.escape(req.body.firstname) + ", `lastname` = " + mysql.escape(req.body.lastname) + ", `email` = " + mysql.escape(req.body.email) + ", `gender` =" + mysql.escape(req.body.gender) + ", `phonenumber` =" + mysql.escape(req.body.phonenumber) + ", `aboutme` =" + mysql.escape(req.body.aboutme) + ", `country` =" + mysql.escape(req.body.country) + ", `company` =" + mysql.escape(req.body.company) + ", `school` =" + mysql.escape(req.body.school) + ", `hometown` =" + mysql.escape(req.body.hometown) + ", `languages` =" + mysql.escape(req.body.languages) + ", `profileimage` =" + mysql.escape(req.body.profileimage) + ", `city` =" + mysql.escape(req.body.city) + "WHERE `travellertable`.`username` = " + mysql.escape(req.body.username);
-    console.log("sql query is ", sql);
-    pool.getConnection(function(err, con) {
-      if (err) {
-          console.log("inside connection if")
-        res.writeHead(400, {
-          "Content-Type": "text/plain"
-        });
-        res.end("Could Not Get Connection Object");
-      } else {
-          console.log("inside connection else")
-        con.query(sql, function(err, result) {
-          if (err) {
-              console.log("inside query if")
+    Travellers.update({'username':data.username}, {'firstname':data.firstname,'lastname':data.lastname,'email':data.email,'gender':data.gender,'phonenumber':data.phonenumber,'aboutme':data.aboutme,'country':data.country,'company':data.company,'school':data.school,'hometown':data.hometown,'languages':data.languages,'profileimage':data.profileimage,'city':data.city}, function (err) {
+        if(err){
+            console.log(err);
             res.writeHead(400, {
               "Content-Type": "text/plain"
             });
             res.end("Could Not Get Connection Object");
-          } else {
-            console.log(result);
-            if (result.length < 1) {
-              console.log("result empty");
-              res.end("result is empty");
-            } else {
-              res.writeHead(200, {
-                "Content-Type": "application/json"
-              });
-              console.log(result);
-              res.end("success");
-            }
-          }
-        });
-      }
+        }
+        else
+        {
+          res.writeHead(200, {
+            "Content-Type": "application/json"
+          });
+          res.end("success");
+        }
     });
   });
+
   app.post("/searchresults", function(req, res) {
     console.log("Inside search Request Handler");
     var sql =
@@ -417,6 +393,7 @@ app.post("/travellerprofileedit", function(req, res) {
       }
     });
   });
+
   app.get("/getpropertydetails/:propertyid", function(req, res) {
     var sql =
       "SELECT * FROM propertytable where propertyid =" +
@@ -449,6 +426,7 @@ app.post("/travellerprofileedit", function(req, res) {
       }
     });
   });
+
   app.post("/bookproperty", function(req, res) {
     console.log("inside book property")
     var sql =
@@ -489,6 +467,7 @@ app.post("/travellerprofileedit", function(req, res) {
       }
     });
   });
+
   app.get("/gettravellertrips/:username", function(req, res) {
     var sql =
       "SELECT triptable.fromdate, triptable.todate, propertytable.* FROM triptable INNER JOIN propertytable ON triptable.propertyid = propertytable.propertyid WHERE triptable.bookername =" +
@@ -523,6 +502,7 @@ app.post("/travellerprofileedit", function(req, res) {
       }
     });
   });
+
   app.post("/uploadpp", upload.single("PP"), (req, res) => {
     
     res.send(req.file.filename);
@@ -541,6 +521,7 @@ app.post("/travellerprofileedit", function(req, res) {
     res.writeHead(200, { "Content-Type": "image/jpg" });
     res.end(base64img);
   });
+
 app.listen(3001);
 app.get('/protectedRoute', requireAuth, function (request, response) {
   response.send('Your User id is: ' + request.user.id + ', username is: ' + request.user.username + '.');
