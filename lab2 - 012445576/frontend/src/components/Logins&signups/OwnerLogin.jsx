@@ -8,12 +8,12 @@ import { bindActionCreators } from 'redux';
 class OwnerLogin extends Component {
     constructor(props){
         super(props);
-        this.state = {
-            username : "",
-            password : "",
-            authFlag : false,
-            validationMessage:""
-        }
+        // this.state = {
+        //     username : "",
+        //     password : "",
+        //     authFlag : false,
+        //     validationMessage:""
+        // }
         //Bind the handlers to this class
         this.usernameChangeHandler = this.usernameChangeHandler.bind(this);
         this.passwordChangeHandler = this.passwordChangeHandler.bind(this);

@@ -9,6 +9,12 @@ app.set('view engine', 'ejs');
 var mysql = require('mysql');
 var pool = require('./pool');
 var crypt = require("./db/crypt");
+var jwt = require("jsonwebtoken")
+var passport = require("passport");
+var config = require("./config/settings");
+var requireAuth = passport.authenticate("jwt", {session: false});
+require("./config/passport")(passport);
+app.use(passport.initialize())
 
 const multer = require("multer");
 const path = require("path");
@@ -52,8 +58,8 @@ app.use(function(req, res, next) {
 });
 var Travellers = require('./models/travellers.js');
 var Owners = require('./models/owners.js');
-// var {mongoose} = require('./db/mongoose');
-// const mongoClient = require('mongodb').MongoClient;
+//var {mongoose} = require('./db/mongoose');
+const mongoClient = require('mongodb').MongoClient;
 app.post('/logintraveller',function(req,res){
     console.log("inside traveler login")
     var username=req.body.username;
@@ -116,7 +122,11 @@ app.post('/createtraveller',function(req,res){
               if(err)
                 throw err;
               else{
-                console.log("user saved");                
+                console.log("user saved"); 
+                res.writeHead(200, {
+                  "Content-Type": "text/plain"
+                });
+                res.end("Traveller created Successfully");               
               }
           });
       }
@@ -137,8 +147,9 @@ app.post('/loginowner',function(req,res){
             if(isMatch&&!err){
               console.log("login successful....", owner.password);
               console.log("User Details username",owner.username);
+              var token = jwt.sign({username},config.secret, { expiresIn:900000})
               if (owner.length != 0) {
-                  res.cookie('owner',username,{maxAge: 900000, httpOnly: false, path : '/'});
+                  res.cookie('owner',token,{maxAge: 900000, httpOnly: false, path : '/'});
               }
               // req.session.user = result;
               res.writeHead(200,{
@@ -188,7 +199,11 @@ app.post('/createowner',function(req,res){
                   if(err)
                     throw err;
                   else{
-                    console.log("user saved");                
+                    console.log("user saved"); 
+                    res.writeHead(200, {
+                      "Content-Type": "text/plain"
+                    });
+                    res.end("Owner created Successfully");               
                   }
               });
           }
@@ -527,4 +542,7 @@ app.post("/travellerprofileedit", function(req, res) {
     res.end(base64img);
   });
 app.listen(3001);
+app.get('/protectedRoute', requireAuth, function (request, response) {
+  response.send('Your User id is: ' + request.user.id + ', username is: ' + request.user.username + '.');
+});
 console.log("Server Listening on port 3001");
