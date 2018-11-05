@@ -22,6 +22,7 @@ var Properties = require('./models/properties.js');
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+var kafka = require('./kafka/client');
 const storage = multer.diskStorage({
   
   destination: (req, file, cb) => {
@@ -248,24 +249,34 @@ app.post('/createproperty',function(req,res){
   });
 });
 
-app.get("/getownerproperties/:username", function(req, res) {
-    Properties.find({'username': req.params.username}, function (err, property) {
-      if (err) {
-          throw err;
-      }
-      else {
-          if(property){
-              res.writeHead(200, {
-                "Content-Type": "application/json"
-              });
-              res.end(JSON.stringify(property));     
-          }
-          else{
-              throw err;
-          }
-      }
-    });
+app.get("/getownerproperties/:username", function(req, res) { 
+  //   kafka.make_request('login_topic',{"path":"getownerproperties", "username":req.params.username}, function(err,results){
+  //     if(err){
+  //         res.send(err);
+  //     }
+  //     else
+  //     {
+  //         res.send(results);
+  //     }
+  // });
+  Properties.find({'username': req.params.username}, function (err, property) {
+    if (err) {
+        throw err;
+    }
+    else {
+        if(property){
+            res.writeHead(200, {
+              "Content-Type": "application/json"
+            });
+            res.end(JSON.stringify(property));  
+            //callback(null, res);   
+        }
+        else{
+            throw err;
+        }
+    }
   });
+});
   var con = mysql.createConnection({
   host: "localhost",
   user: "root",
