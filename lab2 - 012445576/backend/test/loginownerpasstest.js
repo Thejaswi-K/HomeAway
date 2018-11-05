@@ -5,7 +5,7 @@ chai.use(chaiHttp);
 
 var expect = chai.expect;
 
-it("Should check credentials and return status code true for OWNER", function(done){
+it("Check pass case for owner login", function(done){
     chai.request('http://localhost:3001')
     .post('/loginowner')
     .send({ "username": "owner", "password" : "admin"})
