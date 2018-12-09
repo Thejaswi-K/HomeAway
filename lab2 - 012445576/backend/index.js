@@ -250,32 +250,36 @@ app.post('/createproperty',function(req,res){
 });
 
 app.get("/getownerproperties/:username", function(req, res) { 
-  //   kafka.make_request('login_topic',{"path":"getownerproperties", "username":req.params.username}, function(err,results){
-  //     if(err){
-  //         res.send(err);
-  //     }
-  //     else
-  //     {
-  //         res.send(results);
-  //     }
-  // });
-  Properties.find({'username': req.params.username}, function (err, property) {
-    if (err) {
-        throw err;
-    }
-    else {
-        if(property){
-            res.writeHead(200, {
-              "Content-Type": "application/json"
-            });
-            res.end(JSON.stringify(property));  
-            //callback(null, res);   
-        }
-        else{
-            throw err;
-        }
-    }
+    kafka.make_request('login_topic',{"path":"getownerproperties", "username":req.params.username}, function(err,results){
+      if(err){
+          res.send(err);
+      }
+      else
+      {
+          res.writeHead(200, {
+            "Content-Type": "application/json"
+          });
+          res.end(results);
+          //res.send(results);
+      }
   });
+  // Properties.find({'username': req.params.username}, function (err, property) {
+  //   if (err) {
+  //       throw err;
+  //   }
+  //   else {
+  //       if(property){
+  //           res.writeHead(200, {
+  //             "Content-Type": "application/json"
+  //           });
+  //           res.end(JSON.stringify(property));  
+  //           //callback(null, res);   
+  //       }
+  //       else{
+  //           throw err;
+  //       }
+  //   }
+  // });
 });
   var con = mysql.createConnection({
   host: "localhost",
@@ -286,42 +290,69 @@ app.get("/getownerproperties/:username", function(req, res) {
 });
 
   app.get("/getownerdetails/:username", function(req, res) {
-   
-    Owners.find({'username': req.params.username}, function (err, owner) {
-      if (err) {
-          throw err;
+    kafka.make_request('login_topic',{"path":"getownerdetails", "username":req.params.username}, function(err,results){
+      if(err){
+          res.send(err);
       }
-      else {
-          if(owner){
-              res.writeHead(200, {
-                "Content-Type": "application/json"
-              });
-              res.end(JSON.stringify(owner));     
-          }
-          else{
-              throw err;
-          }
+      else
+      {
+          res.writeHead(200, {
+            "Content-Type": "application/json"
+          });
+          res.end(results);
+          //res.send(results);
       }
     });
-  });
+    // Owners.find({'username': req.params.username}, function (err, owner) {
+    //   if (err) {
+    //       throw err;
+    //   }
+    //   else {
+    //       if(owner){
+    //           res.writeHead(200, {
+    //             "Content-Type": "application/json"
+    //           });
+    //           res.end(JSON.stringify(owner));     
+    //       }
+    //       else{
+    //           throw err;
+    //       }
+    //   }
+    // });
+  
+});
+
 
   app.get("/gettravellerdetails/:username", function(req, res) {
-    Travellers.find({'username': req.params.username}, function (err, userProfile) {
-        if (err) {
-            throw err;
-        }
-        else {
-            if(userProfile){
-                res.writeHead(200, {
-                  "Content-Type": "application/json"
-                });
-                res.end(JSON.stringify(userProfile));     
-            }
-            else{
-                throw err;
-            }
-        }
+    kafka.make_request('login_topic',{"path":"gettravelerdetails", "username":req.params.username}, function(err,results){
+      if(err){
+          res.send(err);
+      }
+      else
+      {
+          res.writeHead(200, {
+            "Content-Type": "application/json"
+          });
+          res.end(results);
+          //res.send(results);
+      }
     });
+    // Travellers.find({'username': req.params.username}, function (err, userProfile) {
+    //     if (err) {
+    //         throw err;
+    //     }
+    //     else {
+    //         if(userProfile){
+    //             res.writeHead(200, {
+    //               "Content-Type": "application/json"
+    //             });
+    //             res.end(JSON.stringify(userProfile));     
+    //         }
+    //         else{
+    //             throw err;
+    //         }
+    //     }
+    // });
   });
 
 app.post("/travellerprofileedit", function(req, res) {
@@ -346,7 +377,6 @@ app.post("/travellerprofileedit", function(req, res) {
   });
 
   app.post("/searchresults", function(req, res) {
-    
     Properties.find({'location': req.body.location,'accomodation':req.body.guest,'availabilityfrom':{$lt : req.body.arrive},'availabilityto':{$gt : req.body.depart}}, function (err, searchdetails) {
       if (err) {
           throw err;
@@ -367,22 +397,35 @@ app.post("/travellerprofileedit", function(req, res) {
 
   app.get("/getpropertydetails/:propertyid", function(req, res) {
     
-    Properties.find({'_id': req.params.propertyid}, function (err, propdetails) {
-      if (err) {
-          throw err;
+    kafka.make_request('login_topic',{"path":"getpropertydetails", "propertyid":req.params.propertyid}, function(err,results){
+      if(err){
+          res.send(err);
       }
-      else {
-          if(propdetails){
-              res.writeHead(200, {
-                "Content-Type": "application/json"
-              });
-              res.end(JSON.stringify(propdetails));     
-          }
-          else{
-              throw err;
-          }
+      else
+      {
+          res.writeHead(200, {
+            "Content-Type": "application/json"
+          });
+          res.end(results);
+          //res.send(results);
       }
     });
+    // Properties.find({'_id': req.params.propertyid}, function (err, propdetails) {
+    //   if (err) {
+    //       throw err;
+    //   }
+    //   else {
+    //       if(propdetails){
+    //           res.writeHead(200, {
+    //             "Content-Type": "application/json"
+    //           });
+    //           res.end(JSON.stringify(propdetails));     
+    //       }
+    //       else{
+    //           throw err;
+    //       }
+    //   }
+    // });
   });
 
   app.post("/bookproperty", function(req, res) {
@@ -441,6 +484,8 @@ app.post("/travellerprofileedit", function(req, res) {
     //     });
     //   }
     // });
+
+    
     Trip.aggregate([{$lookup:{
       "from": "properties",
       "localField": "propertyid",
